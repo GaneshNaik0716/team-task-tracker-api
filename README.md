@@ -4,7 +4,7 @@
 
 Team Task Tracker API is a backend application built as part of the SDE-II Take Home Assignment.
 
-The application allows organizations to manage users, projects, and tasks with role-based access control, JWT authentication, Redis caching, and Dockerized deployment.
+The application allows organizations to manage users, projects, and tasks with role-based access control (RBAC), JWT authentication, Redis caching, PostgreSQL, Prisma ORM, Docker, and Swagger documentation.
 
 ---
 
@@ -14,25 +14,24 @@ The application allows organizations to manage users, projects, and tasks with r
 
 * User Registration
 * User Login
-* JWT Access Tokens
-* Refresh Token Storage
+* JWT Access Token Authentication
+* Refresh Token Support
 * Protected Routes
 
 ### Authorization (RBAC)
 
-Supported roles:
+Supported Roles:
 
 * ADMIN
 * MANAGER
 * MEMBER
-
-Permissions:
 
 #### ADMIN
 
 * Manage Users
 * Manage Projects
 * Manage Tasks
+* View Organization Data
 
 #### MANAGER
 
@@ -60,6 +59,14 @@ Task fields:
 * Due Date
 * Project
 
+### Task Status Values
+
+* TODO
+* IN_PROGRESS
+* IN_REVIEW
+* DONE
+* BLOCKED
+
 ### Status Workflow
 
 ```text
@@ -72,7 +79,7 @@ IN_REVIEW
 DONE
 ```
 
-Blocked tasks:
+Blocked workflow:
 
 ```text
 TODO --------\
@@ -80,41 +87,53 @@ IN_PROGRESS ---→ BLOCKED
 IN_REVIEW ----/
 ```
 
+Status transitions are validated by the API.
+
+Examples:
+
+```text
+TODO → IN_PROGRESS
+IN_PROGRESS → IN_REVIEW
+IN_REVIEW → DONE
+```
+
+Invalid transitions return an error response.
+
 Only the assigned user or a MANAGER can update task status.
 
 ---
 
 ## Tech Stack
 
-Backend:
+### Backend
 
 * Node.js
 * Express.js
 
-Database:
+### Database
 
 * PostgreSQL
 * Prisma ORM
 
-Authentication:
+### Authentication
 
 * JWT
 * Bcrypt
 
-Caching:
+### Caching
 
 * Redis
 
-Documentation:
+### Documentation
 
 * Swagger UI
 
-Testing:
+### Testing
 
 * Jest
 * Supertest
 
-Containerization:
+### Containerization
 
 * Docker
 * Docker Compose
@@ -142,8 +161,6 @@ src
 │   ├── projects
 │   └── tasks
 │
-├── routes
-│
 ├── utils
 │
 ├── app.js
@@ -156,14 +173,14 @@ src
 
 ### Organization
 
-One organization can contain:
+One organization contains:
 
 * Multiple Users
 * Multiple Projects
 
 ### Project
 
-One project can contain:
+One project contains:
 
 * Multiple Tasks
 
@@ -176,9 +193,9 @@ Each task belongs to:
 
 ---
 
-## Indexing Strategy
+## Database Indexing
 
-The following indexes were added to improve filtering performance:
+The following indexes were added for query optimization:
 
 ```prisma
 @@index([status])
@@ -187,23 +204,20 @@ The following indexes were added to improve filtering performance:
 @@index([assigneeId, status])
 ```
 
-### Design Decision
+These indexes improve performance for:
 
-Task filtering is frequently performed using:
-
-* Status
-* Assignee
-* Due Date
-
-Indexes were added on these columns to improve query performance for pagination and filtering.
+* Status filtering
+* Assignee filtering
+* Due date filtering
+* Combined assignee and status queries
 
 ---
 
-## Redis Caching Strategy
+## Redis Caching
 
 Task list responses are cached per assignee.
 
-Cache key format:
+Cache Key Format:
 
 ```text
 tasks:<assigneeId>
@@ -212,7 +226,7 @@ tasks:<assigneeId>
 Example:
 
 ```text
-tasks:1006cc25-6682-464b-a1d8-487a2279d360
+tasks:134573df-0323-4312-ad84-0a86c95ddfdb
 ```
 
 ### Cache Invalidation
@@ -224,17 +238,18 @@ Cache is cleared when:
 * Task Deleted
 * Task Status Updated
 
-This ensures Redis always returns fresh data.
+This ensures fresh data is always returned.
 
 ---
 
-# Running the Project From Scratch
+# Running The Project
 
 ## 1. Clone Repository
 
 ```bash
-git clone <repository-url>
-cd team-task-tracker
+git clone https://github.com/GaneshNaik0716/team-task-tracker-api.git
+
+cd team-task-tracker-api
 ```
 
 ---
@@ -247,9 +262,9 @@ npm install
 
 ---
 
-## 3. Create Environment File
+## 3. Configure Environment Variables
 
-Create a file:
+Create:
 
 ```text
 .env
@@ -262,9 +277,9 @@ PORT=5000
 
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/task_tracker
 
-JWT_ACCESS_SECRET=supersecretaccesskey
+JWT_ACCESS_SECRET=your_access_secret
 
-JWT_REFRESH_SECRET=supersecretrefreshkey
+JWT_REFRESH_SECRET=your_refresh_secret
 
 REDIS_URL=redis://localhost:6379
 ```
@@ -276,10 +291,10 @@ REDIS_URL=redis://localhost:6379
 Using Docker:
 
 ```bash
-docker compose up -d postgres redis
+docker compose up -d
 ```
 
-Verify containers:
+Verify:
 
 ```bash
 docker ps
@@ -309,7 +324,7 @@ npx prisma migrate dev
 npm run dev
 ```
 
-Expected:
+Expected Output:
 
 ```text
 Redis connected
@@ -349,11 +364,19 @@ Swagger UI can be used to:
 
 * Register Users
 * Login
+* View Current User
 * Create Projects
+* Get Projects
+* Update Projects
+* Delete Projects
 * Create Tasks
+* Get Tasks
+* Update Tasks
+* Delete Tasks
+* Update Task Status
 * Test Protected APIs
 
-without Postman.
+No Postman required.
 
 ---
 
@@ -365,14 +388,14 @@ npm test
 
 ---
 
-## Main API Endpoints
+## API Endpoints
 
 ### Authentication
 
 ```http
-POST /api/auth/register
-POST /api/auth/login
-GET  /api/auth/me
+POST   /api/auth/register
+POST   /api/auth/login
+GET    /api/auth/me
 ```
 
 ### Users
@@ -411,11 +434,11 @@ PATCH  /api/tasks/:id/status
 ## Future Improvements
 
 * Refresh Token Rotation
+* Audit Logging
+* Notifications
 * Analytics Dashboard
-* WebSocket Notifications
-* Audit Logs
 * CI/CD Pipeline
-* Expanded Test Coverage
+* Extended Test Coverage
 
 ---
 

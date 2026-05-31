@@ -1,3 +1,4 @@
+
 const swaggerJsdoc = require("swagger-jsdoc");
 
 const options = {
@@ -7,8 +8,7 @@ const options = {
     info: {
       title: "Team Task Tracker API",
       version: "1.0.0",
-      description:
-        "SDE II Take Home Assignment API",
+      description: "SDE II Take Home Assignment API",
     },
 
     servers: [
@@ -32,10 +32,8 @@ const options = {
           properties: {
             email: {
               type: "string",
-              example:
-                "ganesh@gmail.com",
+              example: "ganesh@gmail.com",
             },
-
             password: {
               type: "string",
               example: "password123",
@@ -50,27 +48,21 @@ const options = {
               type: "string",
               example: "Ganesh",
             },
-
             email: {
               type: "string",
-              example:
-                "ganesh@gmail.com",
+              example: "ganesh@gmail.com",
             },
-
             password: {
               type: "string",
               example: "password123",
             },
-
             role: {
               type: "string",
               example: "ADMIN",
             },
-
             organizationName: {
               type: "string",
-              example:
-                "My Organization",
+              example: "My Organization",
             },
           },
         },
@@ -80,14 +72,11 @@ const options = {
           properties: {
             name: {
               type: "string",
-              example:
-                "Task Tracker Project",
+              example: "Task Tracker Project",
             },
-
             description: {
               type: "string",
-              example:
-                "SDE II Assignment",
+              example: "SDE II Assignment",
             },
           },
         },
@@ -97,37 +86,27 @@ const options = {
           properties: {
             title: {
               type: "string",
-              example:
-                "Build Authentication",
+              example: "Build Authentication",
             },
-
             description: {
               type: "string",
-              example:
-                "Implement JWT authentication",
+              example: "Implement JWT authentication",
             },
-
             priority: {
               type: "string",
               example: "HIGH",
             },
-
             assigneeId: {
               type: "string",
-              example:
-                "USER_ID",
+              example: "USER_ID",
             },
-
             projectId: {
               type: "string",
-              example:
-                "PROJECT_ID",
+              example: "PROJECT_ID",
             },
-
             dueDate: {
               type: "string",
-              example:
-                "2026-06-15T00:00:00.000Z",
+              example: "2026-06-15T00:00:00.000Z",
             },
           },
         },
@@ -138,23 +117,20 @@ const options = {
       "/auth/register": {
         post: {
           tags: ["Authentication"],
-          summary:
-            "Register User",
+          summary: "Register User",
           requestBody: {
             required: true,
             content: {
               "application/json": {
                 schema: {
-                  $ref:
-                    "#/components/schemas/RegisterRequest",
+                  $ref: "#/components/schemas/RegisterRequest",
                 },
               },
             },
           },
           responses: {
             201: {
-              description:
-                "User created",
+              description: "User created",
             },
           },
         },
@@ -163,23 +139,20 @@ const options = {
       "/auth/login": {
         post: {
           tags: ["Authentication"],
-          summary:
-            "Login User",
+          summary: "Login User",
           requestBody: {
             required: true,
             content: {
               "application/json": {
                 schema: {
-                  $ref:
-                    "#/components/schemas/LoginRequest",
+                  $ref: "#/components/schemas/LoginRequest",
                 },
               },
             },
           },
           responses: {
             200: {
-              description:
-                "Login successful",
+              description: "Login successful",
             },
           },
         },
@@ -188,13 +161,8 @@ const options = {
       "/auth/me": {
         get: {
           tags: ["Authentication"],
-          summary:
-            "Current User",
-          security: [
-            {
-              bearerAuth: [],
-            },
-          ],
+          summary: "Current User",
+          security: [{ bearerAuth: [] }],
           responses: {
             200: {
               description: "OK",
@@ -206,13 +174,8 @@ const options = {
       "/projects": {
         get: {
           tags: ["Projects"],
-          summary:
-            "Get Projects",
-          security: [
-            {
-              bearerAuth: [],
-            },
-          ],
+          summary: "Get Projects",
+          security: [{ bearerAuth: [] }],
           responses: {
             200: {
               description: "OK",
@@ -222,11 +185,56 @@ const options = {
 
         post: {
           tags: ["Projects"],
-          summary:
-            "Create Project",
-          security: [
+          summary: "Create Project",
+          security: [{ bearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/ProjectRequest",
+                },
+              },
+            },
+          },
+          responses: {
+            201: {
+              description: "Project created",
+            },
+          },
+        },
+      },
+
+      "/projects/{id}": {
+        get: {
+          tags: ["Projects"],
+          summary: "Get Project By Id",
+          security: [{ bearerAuth: [] }],
+          parameters: [
             {
-              bearerAuth: [],
+              name: "id",
+              in: "path",
+              required: true,
+              schema: { type: "string" },
+            },
+          ],
+          responses: {
+            200: {
+              description: "Project found",
+            },
+          },
+        },
+
+        patch: {
+          tags: ["Projects"],
+          summary: "Update Project",
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            {
+              name: "id",
+              in: "path",
+              required: true,
+              schema: { type: "string" },
             },
           ],
           requestBody: {
@@ -234,16 +242,33 @@ const options = {
             content: {
               "application/json": {
                 schema: {
-                  $ref:
-                    "#/components/schemas/ProjectRequest",
+                  $ref: "#/components/schemas/ProjectRequest",
                 },
               },
             },
           },
           responses: {
-            201: {
-              description:
-                "Project created",
+            200: {
+              description: "Project updated",
+            },
+          },
+        },
+
+        delete: {
+          tags: ["Projects"],
+          summary: "Delete Project",
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            {
+              name: "id",
+              in: "path",
+              required: true,
+              schema: { type: "string" },
+            },
+          ],
+          responses: {
+            200: {
+              description: "Project deleted",
             },
           },
         },
@@ -252,13 +277,8 @@ const options = {
       "/tasks": {
         get: {
           tags: ["Tasks"],
-          summary:
-            "Get Tasks",
-          security: [
-            {
-              bearerAuth: [],
-            },
-          ],
+          summary: "Get Tasks",
+          security: [{ bearerAuth: [] }],
           responses: {
             200: {
               description: "OK",
@@ -268,11 +288,56 @@ const options = {
 
         post: {
           tags: ["Tasks"],
-          summary:
-            "Create Task",
-          security: [
+          summary: "Create Task",
+          security: [{ bearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/TaskRequest",
+                },
+              },
+            },
+          },
+          responses: {
+            201: {
+              description: "Task created",
+            },
+          },
+        },
+      },
+
+      "/tasks/{id}": {
+        get: {
+          tags: ["Tasks"],
+          summary: "Get Task By Id",
+          security: [{ bearerAuth: [] }],
+          parameters: [
             {
-              bearerAuth: [],
+              name: "id",
+              in: "path",
+              required: true,
+              schema: { type: "string" },
+            },
+          ],
+          responses: {
+            200: {
+              description: "Task found",
+            },
+          },
+        },
+
+        patch: {
+          tags: ["Tasks"],
+          summary: "Update Task",
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            {
+              name: "id",
+              in: "path",
+              required: true,
+              schema: { type: "string" },
             },
           ],
           requestBody: {
@@ -280,16 +345,70 @@ const options = {
             content: {
               "application/json": {
                 schema: {
-                  $ref:
-                    "#/components/schemas/TaskRequest",
+                  $ref: "#/components/schemas/TaskRequest",
                 },
               },
             },
           },
           responses: {
-            201: {
-              description:
-                "Task created",
+            200: {
+              description: "Task updated",
+            },
+          },
+        },
+
+        delete: {
+          tags: ["Tasks"],
+          summary: "Delete Task",
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            {
+              name: "id",
+              in: "path",
+              required: true,
+              schema: { type: "string" },
+            },
+          ],
+          responses: {
+            200: {
+              description: "Task deleted",
+            },
+          },
+        },
+      },
+
+      "/tasks/{id}/status": {
+        patch: {
+          tags: ["Tasks"],
+          summary: "Update Task Status",
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            {
+              name: "id",
+              in: "path",
+              required: true,
+              schema: { type: "string" },
+            },
+          ],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    status: {
+                      type: "string",
+                      example: "IN_PROGRESS",
+                    },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            200: {
+              description: "Status updated",
             },
           },
         },
@@ -300,8 +419,7 @@ const options = {
   apis: [],
 };
 
-const swaggerSpec =
-  swaggerJsdoc(options);
+const swaggerSpec = swaggerJsdoc(options);
 
-module.exports =
-  swaggerSpec;
+module.exports = swaggerSpec;
+
